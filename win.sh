@@ -9,7 +9,7 @@ sudo fdisk -l
 read -r -p "Enter the disk name without the partitions number (example /dev/sdx): " DEVICE
 
 PARTITION_START="1M"
-PARTITION_END="6GB"
+PARTITION_END="12GB"
 MOUNT_DIR="/mnt"
 
 sudo mkdir -p "/mnt/WIN"
@@ -32,7 +32,7 @@ sudo partprobe $DEVICE
 sudo mkfs.ntfs -f -L "Main Partition" "${DEVICE}1"
 
 # Create the FAT16 partition
-sudo parted -s $DEVICE mkpart primary fat16 6GB 7GB+1MB
+sudo parted -s $DEVICE mkpart primary fat16 13GB 13GB+1MB
 
 # Inform the kernel of the changes to the partition table
 sudo partprobe $DEVICE
