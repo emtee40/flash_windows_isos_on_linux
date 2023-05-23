@@ -51,9 +51,6 @@ wget -P ./resources https://raw.githubusercontent.com/pbatard/rufus/master/res/u
 # dd of uefi.img
 sudo dd if='./resources/uefi-ntfs.img' of="${DEVICE}2"
 
-# Inform the kernel of the changes to the partition table
-sudo partprobe $DEVICE
-
 # Print information about the created partitions
 sudo parted $DEVICE print
 
