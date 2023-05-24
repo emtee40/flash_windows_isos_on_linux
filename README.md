@@ -11,6 +11,10 @@ It works.
 
 https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/a33bfc2a-d537-4aee-9324-8b1758458983
 
+
+https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2-b468-4845-adec-6df289937577
+
+
 Need to fix :
 
       - The unmount process requires some time.
