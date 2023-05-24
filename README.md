@@ -1,5 +1,7 @@
 # flash_windows_isos_on_linux
-Create bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard. You need to use an usb that is at least 8GB.
+Create bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
+
+You need to use an usb that is at least 8GB.
 
 This is an alpha release. Expect a lot of bugs!
 
