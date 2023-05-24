@@ -95,9 +95,6 @@ EOF
 # Format NTFS
 sudo mkfs.ntfs -f -L "Main Partition" ${DEVICE}1
 
-# Format FAT16
-sudo mkfs.fat -F 16 -n "FAT16" ${DEVICE}2
-
 # Inform the kernel of the changes 
 sudo partprobe $DEVICE
 
