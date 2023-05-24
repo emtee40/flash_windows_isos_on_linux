@@ -5,8 +5,26 @@ sudo dpkg -l | grep -qw p7zip-full || sudo apt-get install p7zip-full -y
 # List disks and partitions
 sudo fdisk -l
 
-# Ask for disk name
-read -r -p "Enter the disk name without the partitions number (example /dev/sdx): " DEVICE
+while true; do
+    read -r -p "Enter the disk name without the partition number (example /dev/sdx): " DEVICE
+
+    # Only allow /dev/sda, /dev/sdb, ecc.
+    if [[ $DEVICE =~ ^/dev/sd[a-z]$ ]]; then
+        echo "Correct format: $DEVICE"
+        break
+    else
+        echo "Wrong format."
+    fi
+done
+
+read -r -p "Proceed? This will destroy all data on the target device. (y/n): " ANSWER
+
+if [[ $ANSWER =~ ^[Yy]$ ]]; then
+    echo "Proceeding with the operation..."
+else
+    echo "Operation aborted."
+    exit 0
+fi
 
 PARTITION_START="1M"
 PARTITION_END="12GB"
@@ -64,7 +82,7 @@ eval file="$file"
 7z x "$file" -o$MOUNT_DIR/WIN
 
 # Wait
-echo "Wait until you see completed, it will take some time.... be patient"
+echo "Wait until you see COMPLETED, it will take some time.... be patient"
 
 # Unmount the partitions 
 sudo umount ${DEVICE}1
