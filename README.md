@@ -1,20 +1,20 @@
-# flash_windows_isos_on_linux
-Create bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
+# What this script do?
+It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
 
-You need to use an usb that is at least 8GB.
+# Warning
+This is an beta release. 
 
-This is an alpha release. Expect a lot of bugs!
+Tested with Windows 11 and Windows 10 official ISOs.
 
-Tested with win 11 and win10 official ISOs.
-
-It works.
-
+# Videos
 https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/a33bfc2a-d537-4aee-9324-8b1758458983
-
 
 https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2-b468-4845-adec-6df289937577
 
+# Requisistes :
 
-Need to fix :
+      - You need to use a USB that is at least 8GB.
 
-      - The unmount process requires some time.
+# Need to fix :
+
+      - The unmount process requires a lot of time.
