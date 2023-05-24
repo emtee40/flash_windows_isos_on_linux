@@ -48,7 +48,6 @@ sleep 04
 clear
 
 sudo mkdir -p "/mnt/WIN"
-mkdir -p ./resources
 
 echo ""
 echo "Unmounting if mounted"
@@ -61,7 +60,7 @@ sudo umount ${DEVICE}1
 sudo umount ${DEVICE}2
 
 echo ""
-echo "Creating gpt partition table"
+echo "Creating partitions"
 echo ""
 sleep 04
 clear
@@ -69,35 +68,38 @@ clear
 # Eliminate all existing partitions
 sudo sgdisk --zap-all $DEVICE
 
-echo ""
-echo "Create the ntfs partition"
-echo ""
-sleep 04
-clear
+# Convert gpt 
+sudo gdisk ${DEVICE} <<EOF
+w
+y
+EOF
+
+# Inform the kernel of the changes 
+sudo partprobe $DEVICE
 
 # Create the NTFS partition
-sudo sgdisk --new=1:$PARTITION_START:$PARTITION_END --change-name=1:"NTFS" $DEVICE
-
-# Inform the kernel of the changes 
-sudo partprobe $DEVICE
-
-# Format the NTFS partition
-sudo mkfs.ntfs -f -L "Main Partition" "${DEVICE}1"
-
-echo ""
-echo "Create the fat16 partition"
-echo ""
-sleep 04
-clear
+sudo parted ${DEVICE} <<EOF
+mklabel gpt
+mkpart primary ntfs 0GB 7GB
+print
+quit
+EOF
 
 # Create the FAT16 partition
-sudo parted -s $DEVICE mkpart primary fat16 13GB 13GB+1MB
+sudo parted ${DEVICE} <<EOF
+mkpart primary fat16 7GB 7001MB
+print
+quit
+EOF
+
+# Format NTFS
+sudo mkfs.ntfs -f -L "Main Partition" ${DEVICE}1
+
+# Format FAT16
+sudo mkfs.fat -F 16 -n "FAT16" ${DEVICE}2
 
 # Inform the kernel of the changes 
 sudo partprobe $DEVICE
-
-# Format the FAT16 partition
-sudo mkfs.fat -F 16 -n "FAT16" "${DEVICE}2"
 
 echo ""
 echo "Download and dd the rufus bootloader"
@@ -170,7 +172,6 @@ sleep 04
 clear
 
 # Clean
-sudo rm -rf ./resources
 sudo rm -rf '/mnt/WIN' 
 
 # Done
