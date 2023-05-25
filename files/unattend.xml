@@ -20,14 +20,6 @@
           <Order>3</Order>
           <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassRAMCheck /t REG_DWORD /d 1 /f</Path>
         </RunSynchronousCommand>
-        <RunSynchronousCommand wcm:action="add">
-          <Order>4</Order>
-          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassStorageCheck /t REG_DWORD /d 1 /f</Path>
-        </RunSynchronousCommand>
-        <RunSynchronousCommand wcm:action="add">
-          <Order>5</Order>
-          <Path>reg add HKLM\SYSTEM\Setup\LabConfig /v BypassCPUCheck  /t REG_DWORD /d 1 /f</Path>
-        </RunSynchronousCommand>        
       </RunSynchronous>
     </component>
   </settings>
@@ -38,23 +30,7 @@
           <Order>1</Order>
           <Path>reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v BypassNRO /t REG_DWORD /d 1 /f</Path>
         </RunSynchronousCommand>
-        <RunSynchronousCommand wcm:action="add">
-          <Order>2</Order>
-          <Path>reg add HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent /v DisableCloudOptimizedContent /t REG_DWORD /d 1 /f</Path>
-        </RunSynchronousCommand>
-        <RunSynchronousCommand wcm:action="add">
-          <Order>3</Order>
-          <Path>reg add HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent /v DisableConsumerAccountStateContent /t REG_DWORD /d 1 /f</Path>
-        </RunSynchronousCommand>
-        <RunSynchronousCommand wcm:action="add">
-          <Order>4</Order>
-          <Path>reg add HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\Start /v ConfigureStartPins /t REG_SZ /d "{\"pinnedList\": [{}]}" /f</Path>
-        </RunSynchronousCommand>     
-        <RunSynchronousCommand wcm:action="add">
-          <Order>5</Order>
-          <Path>reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System /v EnableFirstLogonAnimation /t REG_DWORD /d 0 /f</Path>
-        </RunSynchronousCommand>                         
-      </RunSynchronous>      
+      </RunSynchronous>
     </component>
   </settings>
   <settings pass="oobeSystem">
@@ -65,8 +41,8 @@
       <UserAccounts>
         <LocalAccounts>
           <LocalAccount wcm:action="add">
-            <Name>nomeutente</Name>
-            <DisplayName>nomeutente</DisplayName>
+            <Name>admin</Name>
+            <DisplayName>admin</DisplayName>
             <Group>Administrators;Power Users</Group>
             <Password>
               <Value>UABhAHMAcwB3AG8AcgBkAA==</Value>
@@ -75,5 +51,6 @@
           </LocalAccount>
         </LocalAccounts>
       </UserAccounts>
+    </component>
   </settings>
 </unattend>
