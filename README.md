@@ -2,7 +2,7 @@
 It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
 
 # Warning
-This is an beta release. 
+This is a beta release. 
 
 Tested with Windows 11 and Windows 10 official ISOs.
 
