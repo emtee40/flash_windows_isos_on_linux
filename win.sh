@@ -1,175 +1,218 @@
 #!/bin/bash
 
-# Ask for sudo privileges
+# Validate the number of command-line arguments
+if [ "$#" -ne 2 ]; then
+    echo ""
+    echo "Usage: $0 <disk_name> <iso_file>"
+    echo ""
+    echo "Your disks are: "
+    echo""
+    lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
+    exit 1
+fi
+
+DEVICE="$1"
+ISO_FILE="$2"
+
+clear
+echo ""
+echo "Disk: $DEVICE"
+echo "ISO File: $ISO_FILE"
+echo ""
+
+# Check if the device exists
+if [ ! -e "$DEVICE" ]; then
+    echo "Device $DEVICE does not exist."
+    exit 1
+fi
+
+# Check if the ISO file exists
+if [ ! -f "$ISO_FILE" ]; then
+    echo "ISO file $ISO_FILE does not exist."
+    exit 1
+fi
+
+# Check for sudo privileges
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
+clear
 echo ""
 echo "Checking dependencies"
 echo ""
-sleep 04
-clear
+sleep 4
 
 sudo dpkg -l | grep -qw p7zip-full || sudo apt-get install p7zip-full -y
 
-# List disks and partitions
-lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
-
-while true; do
-    echo ""
-    read -r -p "Enter the disk name without the partition number (example /dev/sdx): " DEVICE
-
-    # Only allow /dev/sda, /dev/sdb, ecc.
-    if [[ $DEVICE =~ ^/dev/sd[a-z]$ ]]; then
-        break
-    else
-        echo "Wrong format."
-    fi
-done
-
-echo ""
-read -r -p "Proceed? This will destroy all data on the target device. (y/n): " ANSWER
-
-if [[ $ANSWER =~ ^[Yy]$ ]]; then
-    echo ""
-    echo "Proceeding with the operation..."
-else
-    echo "Operation aborted."
-    exit 0
+if [ $? -eq 1 ]; then
+    echo "Installation of p7zip-full failed."
+    exit 1
 fi
+
+# Confirm the operation with the user
+echo ""
+
+while [ -z $prompt ];
+do read -p "Proceed? This will destroy all data on the target device. (y/n): " choice;
+case "$choice" in
+    y|Y ) echo "Start!";break;;
+    n|N ) exit 1;;
+esac;
+done;
 
 PARTITION_START="1M"
 PARTITION_END="12GB"
 MOUNT_DIR="/mnt"
 
+clear
 echo ""
 echo "Creating folders"
 echo ""
-sleep 04
+sleep 4
+
+sudo mkdir -p "$MOUNT_DIR/WIN"
+
 clear
-
-sudo mkdir -p "/mnt/WIN"
-
 echo ""
 echo "Unmounting if mounted"
 echo ""
-sleep 04
-clear
+sleep 4
+
 
 # Unmount the partitions if they are already mounted
-sudo umount ${DEVICE}1
-sudo umount ${DEVICE}2
+sudo umount "${DEVICE}1"
+sudo umount "${DEVICE}2"
 
+clear
 echo ""
 echo "Creating partitions"
 echo ""
-sleep 04
-clear
+sleep 4
 
 # Eliminate all existing partitions
-sudo sgdisk --zap-all $DEVICE
+sudo sgdisk --zap-all "$DEVICE"
 
-# Convert gpt 
-sudo gdisk ${DEVICE} <<EOF
+# Convert gpt
+sudo gdisk "$DEVICE" <<EOF
 w
 y
 EOF
 
-# Inform the kernel of the changes 
-sudo partprobe $DEVICE
+# Inform the kernel of the changes
+sudo partprobe "$DEVICE"
 
 # Create the NTFS partition
-sudo parted ${DEVICE} <<EOF
+sudo parted "$DEVICE" <<EOF
 mklabel gpt
 mkpart primary ntfs 0GB 7GB
 print
 quit
 EOF
 
+# Inform the kernel of the changes
+sudo partprobe "$DEVICE"
+
 # Create the FAT16 partition
-sudo parted ${DEVICE} <<EOF
+sudo parted "$DEVICE" <<EOF
 mkpart primary fat16 7GB 7001MB
 print
 quit
 EOF
 
+# Inform the kernel of the changes
+sudo partprobe "$DEVICE"
+
 # Format NTFS
-sudo mkfs.ntfs -f -L "Main Partition" ${DEVICE}1
+sudo mkfs.ntfs -f -L "Main Partition" "${DEVICE}1"
 
-# Inform the kernel of the changes 
-sudo partprobe $DEVICE
+# Check for NTFS with "Main Partition" label
+label=$(sudo blkid -o list | awk '/Main Partition/ && /ntfs/ {print $3}')
 
+if [[ -n "$label" ]]; then
+    echo "Label 'Main Partition' found for NTFS partition"
+    sleep 4
+else
+    echo "Error, label 'Main Partition' not found for NTFS partition"
+    echo "Operation aborted."
+    exit 1
+fi
+
+# Inform the kernel of the changes
+sudo partprobe "$DEVICE"
+
+clear
 echo ""
 echo "Download and dd the rufus bootloader"
 echo ""
-sleep 04
-clear
+sleep 4
 
 # Download uefi.img
-if [ -f /tmp/uefi-ntfs.img ]  
-then
+if [ -f /tmp/uefi-ntfs.img ]; then
     sudo rm /tmp/uefi-ntfs.img
-fi 
+fi
 
 wget -P /tmp https://raw.githubusercontent.com/pbatard/rufus/master/res/uefi/uefi-ntfs.img
 
 # dd of uefi.img
 sudo dd if='/tmp/uefi-ntfs.img' of="${DEVICE}2"
 
+# Inform the kernel of the changes
+sudo partprobe "$DEVICE"
+
 # Print information about the created partitions
-sudo parted $DEVICE print
+sudo parted "$DEVICE" print
 
-label=$(sudo blkid -o list | grep UEFI_NTFS)
+# Check for FAT16 with "UEFI_NTFS" label
+label=$(sudo blkid -o list | awk '/UEFI_NTFS/ && /vfat/ {print $3}')
 
-if [[ -z "$tpm" ]]; then
-    echo "Label is UEFI_NTFS"
+if [[ -n "$label" ]]; then
+    echo "Label 'UEFI_NTFS' found for FAT16 partition"
+    sleep 4
 else
-    echo "Error, label is not UEFI_NTFS"
+    echo "Error, label 'UEFI_NTFS' not found for FAT16 partition"
     echo "Operation aborted."
-    exit 0
+    exit 1
 fi
 
 # Mount the win partition
-sudo mount "${DEVICE}1" $MOUNT_DIR/WIN
+sudo mount "${DEVICE}1" "$MOUNT_DIR/WIN"
 
+clear
 echo ""
 echo "Copying files"
 echo ""
-sleep 04
-clear
+sleep 4
 
 # Copy files
-read -e -p "Drag & drop your windows.iso : " file
-eval file="$file"
-
-7z x "$file" -o$MOUNT_DIR/WIN
+7z x "$ISO_FILE" -o"$MOUNT_DIR/WIN"
 
 if [ $? -eq 0 ]; then
     echo "Extraction completed successfully."
 else
     echo "Error occurred during extraction."
     echo "Operation aborted."
-    exit 0
+    exit 1
 fi
 
-sleep 04
+sleep 4
 clear
 echo ""
 echo "Unmounting partitions, it will takes a lot of time.... be patient"
 echo ""
-sleep 04
+sleep 4
 
-# Unmount the partitions 
-sudo umount ${DEVICE}1
-sudo umount ${DEVICE}2
+# Unmount the partitions
+sudo umount "${DEVICE}1"
+sudo umount "${DEVICE}2"
 
+clear
 echo ""
 echo "Cleaning"
 echo ""
-sleep 04
-clear
+sleep 4
 
 # Clean
-sudo rm -rf '/mnt/WIN' 
+sudo rm -rf "$MOUNT_DIR/WIN"
+sudo rm /tmp/uefi-ntfs.img
 
 # Done
 echo "COMPLETED! BYE"
