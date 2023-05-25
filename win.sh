@@ -65,7 +65,7 @@ MOUNT_DIR="/mnt"
 
 clear
 echo ""
-echo "Creating folders"
+echo "Creating folder"
 echo ""
 sleep 4
 
@@ -76,7 +76,6 @@ echo ""
 echo "Unmounting if mounted"
 echo ""
 sleep 4
-
 
 # Unmount the partitions if they are already mounted
 sudo umount "${DEVICE}1"
