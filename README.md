@@ -2,7 +2,7 @@
 It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
 
 # How to use ?
-      - ./win.sh <disk_name> <iso_file>
+      ./win.sh <disk_name> <iso_file>
 
 # Warning
 This is the first release. 
