@@ -2,7 +2,22 @@
 It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
 
 # How to use ?
+      
+   Usage for win10 or 11 without bypass: 
+   
       ./win.sh <disk_name> <iso_file>
+      
+   Usage for win11 with requirements bypass: 
+      
+      ./win.sh <disk_name> <iso_file> <win11>
+      
+   Usage for win10 or 11 without bypass with rst drivers: 
+      
+      ./win.sh <disk_name> <iso_file> <rst>
+
+   Usage for win11 with requirements bypass and rst drivers: 
+      
+      ./win.sh <disk_name> <iso_file> <win11> <rst>
 
 # Video
 

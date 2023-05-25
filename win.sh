@@ -1,23 +1,71 @@
 #!/bin/bash
 
+win_11_unattend() {
+    wget -P /tmp https://raw.githubusercontent.com/daboynb/flash_windows_isos_on_linux/main/files/%24OEM%24.zip
+    7z x '/tmp/$OEM$.zip' -o"$MOUNT_DIR/WIN/sources"
+}
+
+win_rst() {
+    echo ""
+    wget -P /tmp https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/Drivers.zip
+    7z x /tmp/Drivers.zip -o"$MOUNT_DIR/WIN"
+    echo ""
+}
+
+show_help() {
+    echo ""
+    echo "Intel rst driver are needed for Intel 11th up to 13th Gen Platforms, they will be copied inside the root of the usb drive"
+    echo ""
+    echo "Usage for win10 or 11 without bypass: $0 <disk_name> <iso_file>"
+    echo ""
+    echo "Usage for win11 with requirements bypass: $0 <disk_name> <iso_file> <win11>"
+    echo ""
+    echo "Usage for win10 or 11 without bypass with rst drivers: $0 <disk_name> <iso_file> <rst>"
+    echo ""
+    echo "Usage for win11 with requirements bypass and rst drivers: $0 <disk_name> <iso_file> <win11> <rst>"
+    echo ""
+}
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+
+    case $key in
+        -help)
+            show_help
+            exit 0
+            ;;
+        *)
+            break
+            ;;
+    esac
+
+    shift
+done
+
 # Validate the number of command-line arguments
-if [ "$#" -ne 2 ]; then
+if [ "$#" -lt 2 ]; then
     echo ""
-    echo "Usage: $0 <disk_name> <iso_file>"
+    echo "Type -help for the help"
     echo ""
-    echo "Your disks are: "
-    echo ""
-    lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
     exit 1
 fi
 
 DEVICE="$1"
 ISO_FILE="$2"
+WIN11_OPTION="$3"
+RST="$4"
 
 clear
 echo ""
 echo "Disk: $DEVICE"
 echo "ISO File: $ISO_FILE"
+if [[ -n "$WIN11_OPTION" ]]; then
+    echo "Win 10/11: $WIN11_OPTION"
+fi
+if [[ -n "$RST" ]]; then
+    echo "$RST yes"
+fi
 echo ""
 
 # Check if the device exists
@@ -192,6 +240,16 @@ else
     exit 1
 fi
 
+# win_11_unattend function 
+if [ "$WIN11_OPTION" = "win11" ]; then
+    win_11_unattend
+fi
+
+# win_rst function 
+if [ "$RST" = "rst" ]; then
+    win_rst
+fi
+
 sleep 4
 clear
 echo ""
@@ -212,6 +270,8 @@ sleep 4
 # Clean
 sudo rm -rf "$MOUNT_DIR/WIN"
 sudo rm /tmp/uefi-ntfs.img
+sudo rm '/tmp/$OEM$.zip'
+sudo rm /tmp/Drivers.zip
 
 # Done
 echo "COMPLETED! BYE"
