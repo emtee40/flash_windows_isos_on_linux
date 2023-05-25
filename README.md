@@ -4,11 +4,6 @@ It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pba
 # How to use ?
       ./win.sh <disk_name> <iso_file>
 
-# Warning
-This is the first release. 
-
-Tested with Windows 11 and Windows 10 official ISOs.
-
 # Video
 
 https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2-b468-4845-adec-6df289937577
