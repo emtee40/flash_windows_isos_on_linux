@@ -6,7 +6,7 @@ if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <disk_name> <iso_file>"
     echo ""
     echo "Your disks are: "
-    echo""
+    echo ""
     lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
     exit 1
 fi
