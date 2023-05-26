@@ -2,22 +2,15 @@
 It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
 
 # How to use ?
-      
-   Usage for win10 or 11 without bypass: 
-   
-      ./win.sh <disk_name> <iso_file>
-      
-   Usage for win11 with requirements bypass: 
-      
-      ./win.sh <disk_name> <iso_file> <win11>
-      
-   Usage for win10 or 11 without bypass with rst drivers: 
-      
-      ./win.sh <disk_name> <iso_file> <rst>
 
-   Usage for win11 with requirements bypass and rst drivers: 
-      
-      ./win.sh <disk_name> <iso_file> <win11> <rst>
+| Usage                                                       | Description                                                                         |
+|-------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| `./win.sh <disk_name> <iso_file>`                            | For installing Windows 10 or 11 without bypassing any requirements.            |
+| `./win.sh <disk_name> <iso_file> <win11>`                    | For installing Windows 11 with requirements bypassed.                           |
+| `./win.sh <disk_name> <iso_file> <rst>`                      | For installing Windows 10 or 11 without bypassing requirements with RST drivers.|
+| `./win.sh <disk_name> <iso_file> <win11> <rst>`              | For installing Windows 11 with requirements bypassed and RST drivers.           |
+
+Please note that <disk_name> refers to the name of the disk where you want to install Windows, and <iso_file> refers to the path or name of the Windows ISO file you want to use for installation.
 
 # Video
 
