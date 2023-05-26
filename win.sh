@@ -1,15 +1,17 @@
 #!/bin/bash
 
 win_11_unattend() {
+    echo ""    
     wget -P /tmp https://raw.githubusercontent.com/daboynb/flash_windows_isos_on_linux/main/files/%24OEM%24.zip
     7z x '/tmp/$OEM$.zip' -o"$MOUNT_DIR/WIN/sources"
+    echo ""
 }
 
 win_rst() {
     echo ""
     wget -P /tmp https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/Drivers.zip
     7z x /tmp/Drivers.zip -o"$MOUNT_DIR/WIN"
-    echo ""
+    echo ""    
 }
 
 show_help() {
@@ -253,7 +255,17 @@ fi
 sleep 4
 clear
 echo ""
-echo "Unmounting partitions, it will takes a lot of time.... be patient"
+echo "Syncing data... be patient"
+echo ""
+sleep 4
+
+# Sync data
+sync
+
+sleep 4
+clear
+echo ""
+echo "Unmounting partitions... be patient"
 echo ""
 sleep 4
 
