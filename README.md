@@ -26,7 +26,3 @@ https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2
 # Requisistes :
 
       - You need to use a USB that is at least 8GB.
-
-# Need to fix :
-
-      - The unmount process requires a lot of time.

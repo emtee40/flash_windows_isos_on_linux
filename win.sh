@@ -4,6 +4,17 @@ win_11_unattend() {
     echo ""    
     wget -P /tmp https://raw.githubusercontent.com/daboynb/flash_windows_isos_on_linux/main/files/%24OEM%24.zip
     7z x '/tmp/$OEM$.zip' -o"$MOUNT_DIR/WIN/sources"
+          
+    while true; do
+    read -p "Enter the Windows username, (letters only) do not use accents: " winusername
+        if [[ "$winusername" =~ ^[a-zA-Z[:space:]]+$ && ! "$winusername" =~ [òàùè] ]]; then
+            break
+        else
+        echo "Invalid username. Please enter only letters, do not use accents."
+        fi
+    done
+    
+    sed -i "s/admin/$winusername/g" '/mnt/WIN/sources/$OEM$/$$/Panther/unattend.xml' 
     echo ""
 }
 
