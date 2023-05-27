@@ -81,15 +81,47 @@ if [[ -n "$RST" ]]; then
 fi
 echo ""
 
+# Validate the DEVICE parameter
+if [[ ! "$DEVICE" =~ ^/dev/sd[a-z]$ ]]; then
+    echo ""
+    echo "Invalid DEVICE parameter. Please use a valid device name in the format '/dev/sdx', where 'x' can be any letter."
+    echo ""
+    exit 1
+fi
+
 # Check if the device exists
 if [ ! -e "$DEVICE" ]; then
     echo "Device $DEVICE does not exist."
     exit 1
 fi
 
+# Validate the ISO_FILE parameter
+if [[ ! "$ISO_FILE" =~ \.iso$ ]]; then
+    echo ""
+    echo "Invalid ISO_FILE parameter. Please provide a valid file path with '.iso' extension."
+    echo ""
+    exit 1
+fi
+
 # Check if the ISO file exists
 if [ ! -f "$ISO_FILE" ]; then
     echo "ISO file $ISO_FILE does not exist."
+    exit 1
+fi
+
+# Validate the third parameter (if provided)
+if [ -n "$WIN11_OPTION" ] && [ "$WIN11_OPTION" != "win11_bypass" ] && [ "$WIN11_OPTION" != "rst" ]; then
+    echo ""
+    echo "Invalid third parameter. Please use 'win11_bypass' or 'rst' for the third parameter, or omit it."
+    echo ""
+    exit 1
+fi
+
+# Validate the fourth parameter (if provided)
+if [ -n "$RST" ] && [ "$RST" != "win11_bypass" ] && [ "$RST" != "rst" ]; then
+    echo ""
+    echo "Invalid fourth parameter. Please use 'win11_bypass' or 'rst' for the fourth parameter, or omit it."
+    echo ""
     exit 1
 fi
 
