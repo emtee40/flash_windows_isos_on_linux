@@ -74,7 +74,7 @@ echo ""
 echo "Disk: $DEVICE"
 echo "ISO File: $ISO_FILE"
 if [[ -n "$WIN11_OPTION" ]]; then
-    echo "Win 10/11: $WIN11_OPTION"
+    echo "Win 11: $WIN11_OPTION"
 fi
 if [[ -n "$RST" ]]; then
     echo "$RST yes"
