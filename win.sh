@@ -102,14 +102,60 @@ echo "Checking dependencies"
 echo ""
 sleep 4
 
-sudo dpkg -l | grep -qw p7zip-full || sudo apt-get install p7zip-full -y
+programs=("wget" "sgdisk" "gdisk" "partprobe" "parted" "mkfs.ntfs" "blkid")
 
-if [ $? -eq 1 ]; then
-    echo "Installation of p7zip-full failed."
+for i in "${programs[@]}"; do
+    if command -v sudo "$i" >/dev/null 2>&1; then
+        echo "$i is installed"
+    else
+        echo "$i is not installed"
+        exit 1
+    fi
+done
+
+install_arch_linux_dependencies() {
+    printf "\n\n============\nInstalling Arch Linux dependencies...\n============\n\n"
+    sudo pacman -S p7zip --noconfirm
+    check_installation_status 1
+}
+
+install_debian_dependencies() {
+    printf "\n\n============\nInstalling Debian-based dependencies...\n============\n\n"
+    sudo apt install -y p7zip-full 
+    check_installation_status 1
+}
+
+install_fedora_dependencies() {
+    printf "\n\n============\nInstalling Fedora-based dependencies...\n\n"
+    sudo dnf install -y git p7zip p7zip-plugins 
+    check_installation_status 1
+}
+
+check_installation_status() {
+
+    if [ $? -eq 1 ]; then
+        echo "Installation of p7zip failed."
+        exit 1
+    fi
+
+}
+
+if command -v pacman &>/dev/null; then
+    echo "Arch Linux"
+    install_arch_linux_dependencies
+elif command -v apt-get &>/dev/null; then
+    echo "Debian-based (Debian)"
+    install_debian_dependencies
+elif command -v dnf &>/dev/null; then
+    echo "Fedora-based"
+    install_fedora_dependencies
+else
+    echo "Unknown distro"
     exit 1
 fi
 
 # Confirm the operation with the user
+clear
 echo ""
 
 while [ -z $prompt ];
