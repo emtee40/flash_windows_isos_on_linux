@@ -69,22 +69,6 @@ ISO_FILE="$2"
 WIN11_OPTION="$3"
 RST="$4"
 
-# Validate the third parameter (if provided)
-if [ -n "$WIN11_OPTION" ] && [ "$WIN11_OPTION" != "win11_bypass" ]; then
-    echo ""
-    echo "Invalid third parameter. Please use 'win11_bypass' or omit it."
-    echo ""
-    exit 1
-fi
-
-# Validate the third parameter (if provided)
-if [ -n "$RST" ] && [ "$RST" != "rst" ]; then
-    echo ""
-    echo "Invalid third parameter. Please use 'rst' or omit it."
-    echo ""
-    exit 1
-fi
-
 clear
 echo ""
 echo "Disk: $DEVICE"
