@@ -102,6 +102,7 @@ echo "Checking dependencies"
 echo ""
 sleep 4
 
+# Check if some programs are installed
 programs=("wget" "sgdisk" "gdisk" "partprobe" "parted" "mkfs.ntfs" "blkid")
 
 for i in "${programs[@]}"; do
@@ -113,6 +114,7 @@ for i in "${programs[@]}"; do
     fi
 done
 
+# Declare functions
 install_arch_linux_dependencies() {
     printf "\n\n============\nInstalling Arch Linux dependencies...\n============\n\n"
     sudo pacman -S p7zip --noconfirm
@@ -131,6 +133,7 @@ install_fedora_dependencies() {
     check_installation_status 1
 }
 
+# Check installation result
 check_installation_status() {
 
     if [ $? -eq 1 ]; then
@@ -140,11 +143,12 @@ check_installation_status() {
 
 }
 
+# Check which distro are you using
 if command -v pacman &>/dev/null; then
     echo "Arch Linux"
     install_arch_linux_dependencies
 elif command -v apt-get &>/dev/null; then
-    echo "Debian-based (Debian)"
+    echo "Debian-based"
     install_debian_dependencies
 elif command -v dnf &>/dev/null; then
     echo "Fedora-based"
