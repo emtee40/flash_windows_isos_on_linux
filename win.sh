@@ -120,8 +120,6 @@ case "$choice" in
 esac;
 done;
 
-PARTITION_START="1M"
-PARTITION_END="12GB"
 MOUNT_DIR="/mnt"
 
 clear
