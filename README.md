@@ -1,6 +1,8 @@
 # What this script do?
 It creates a bootable Windows USBs using the UEFI:NTFS bootloader created by pbatard.
 
+It should work on all distros. I have tested it only on Debian 11. D3ENNY, who can be found at https://github.com/D3ENNY, is working on a good solution to manage the dependencies on Arch Linux and Fedora. It will be updated soon!"
+
 # How to use ?
 
 | Usage                                                       | Description                                                                         |
@@ -19,4 +21,3 @@ https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2
 # Requisistes :
 
       - You need to use a USB that is at least 8GB.
-      - Only Debian based distros are supported now.
