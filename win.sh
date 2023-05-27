@@ -2,7 +2,7 @@
 
 win_11_unattend() {
     echo ""    
-    wget -P /tmp https://raw.githubusercontent.com/daboynb/flash_windows_isos_on_linux/main/files/%24OEM%24.zip
+    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$.zip'
     7z x '/tmp/$OEM$.zip' -o"$MOUNT_DIR/WIN/sources"
           
     while true; do
@@ -20,7 +20,7 @@ win_11_unattend() {
 
 win_rst() {
     echo ""
-    wget -P /tmp https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/Drivers.zip
+    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/Drivers.zip'
     7z x /tmp/Drivers.zip -o"$MOUNT_DIR/WIN"
     echo ""    
 }
