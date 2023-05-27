@@ -31,11 +31,11 @@ show_help() {
     echo ""
     echo "Usage for win10 or 11 without bypass: $0 <disk_name> <iso_file>"
     echo ""
-    echo "Usage for win11 with requirements bypass: $0 <disk_name> <iso_file> <win11>"
+    echo "Usage for win11 with requirements bypass: $0 <disk_name> <iso_file> <win11_bypass>"
     echo ""
     echo "Usage for win10 or 11 without bypass with rst drivers: $0 <disk_name> <iso_file> <rst>"
     echo ""
-    echo "Usage for win11 with requirements bypass and rst drivers: $0 <disk_name> <iso_file> <win11> <rst>"
+    echo "Usage for win11 with requirements bypass and rst drivers: $0 <disk_name> <iso_file> <win11_bypass> <rst>"
     echo ""
 }
 
@@ -74,7 +74,7 @@ echo ""
 echo "Disk: $DEVICE"
 echo "ISO File: $ISO_FILE"
 if [[ -n "$WIN11_OPTION" ]]; then
-    echo "Win 11: yes"
+    echo "Win 11 bypass: yes"
 fi
 if [[ -n "$RST" ]]; then
     echo "$RST yes"
@@ -118,19 +118,19 @@ done
 install_arch_linux_dependencies() {
     printf "\n\n============\nInstalling Arch Linux dependencies...\n============\n\n"
     sudo pacman -S p7zip --noconfirm
-    check_installation_status 1
+    check_installation_status 
 }
 
 install_debian_dependencies() {
     printf "\n\n============\nInstalling Debian-based dependencies...\n============\n\n"
     sudo apt install -y p7zip-full 
-    check_installation_status 1
+    check_installation_status 
 }
 
 install_fedora_dependencies() {
     printf "\n\n============\nInstalling Fedora-based dependencies...\n\n"
     sudo dnf install -y git p7zip p7zip-plugins 
-    check_installation_status 1
+    check_installation_status 
 }
 
 # Check installation result
