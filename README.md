@@ -19,3 +19,4 @@ https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2
 # Requisistes :
 
       - You need to use a USB that is at least 8GB.
+      - Only Debian based distros are supported now.
