@@ -302,7 +302,7 @@ else
 fi
 
 # win_11_unattend function 
-if [ "$WIN11_OPTION" = "win11" ]; then
+if [ "$WIN11_OPTION" = "win11_bypass" ]; then
     win_11_unattend
 fi
 
