@@ -323,7 +323,32 @@ echo ""
 sleep 4
 
 # Copy files
-7z x "$ISO_FILE" -o"$MOUNT_DIR/WIN"
+extract_on_arch() {
+    7z x "$ISO_FILE" -o"$MOUNT_DIR/WIN"
+}
+
+extract_on_debian() {
+    7z x "$ISO_FILE" -o"$MOUNT_DIR/WIN"
+}
+
+extract_on_fedora() {
+    7za x "$ISO_FILE" -o"$MOUNT_DIR/WIN"
+}
+
+# Check which distro are you using
+if command -v pacman &>/dev/null; then
+    echo "Arch Linux"
+    extract_on_arch
+elif command -v apt-get &>/dev/null; then
+    echo "Debian-based"
+    extract_on_debian
+elif command -v dnf &>/dev/null; then
+    echo "Fedora-based"
+    extract_on_fedora
+else
+    echo "Unknown distro"
+    exit 1
+fi
 
 if [ $? -eq 0 ]; then
     echo "Extraction completed successfully."
