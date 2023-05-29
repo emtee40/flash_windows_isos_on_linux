@@ -44,16 +44,19 @@ win_rst() {
 }
 
 show_help() {
+    echo "Usage: ./win.sh <disk_name> <iso_file>"
     echo ""
-    echo "Intel rst driver are needed for Intel 11th up to 13th Gen Platforms, they will be copied inside the root of the usb drive"
+    echo "Additional parameters:"
+    echo "- <win11_bypass>"
+    echo "- <win10_bypass>"
+    echo "- <rst>"
     echo ""
-    echo "Usage $0 <disk_name> <iso_file>"
-    echo ""
-    echo "Additional parameters <win11_bypass> or <win10_bypass> and <rst>"
-    echo ""
-    echo "Win_11_bypass allows you to skip the hardware requirements checks and the online account"
+    echo "Win_11_bypass allows you to skip the hardware requirements checks and the online account."
     echo ""
     echo "Win_10_bypass allows you to skip the online account."
+    echo ""
+    echo "Intel RST drivers are needed for Intel 11th up to 13th Gen Platforms. They will be copied inside the root of the USB drive."
+    echo ""
 }
 
 # Parse command-line arguments
