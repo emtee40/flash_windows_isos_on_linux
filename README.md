@@ -25,7 +25,7 @@ D3ENNY, who can be found at https://github.com/D3ENNY, is working on a better so
 
 # Download 
            
-    wget https://raw.githubusercontent.com/daboynb/flash_windows_isos_on_linux/main/win.sh && chmod +x win.sh && ./win.sh -help
+    wget https://raw.githubusercontent.com/daboynb/flash_windows_isos_on_linux/main/win.sh && chmod +x win.sh && clear && ./win.sh -help
 # Video
 
 https://github.com/daboynb/flash_windows_isos_on_linux/assets/106079917/cd4132b2-b468-4845-adec-6df289937577
