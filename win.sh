@@ -1,9 +1,30 @@
 #!/bin/bash
 
+# Check for sudo privileges
+[ "$UID" -eq 0 ] || exec sudo "$0" "$@"
+
 win_11_unattend() {
     echo ""    
-    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$.zip'
-    7z x '/tmp/$OEM$.zip' -o"$MOUNT_DIR/WIN/sources"
+    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$11.zip'
+    7z x '/tmp/$OEM$11.zip' -o"$MOUNT_DIR/WIN/sources"
+          
+    while true; do
+    read -p "Enter the Windows username, (letters only) do not use accents: " winusername
+        if [[ "$winusername" =~ ^[a-zA-Z[:space:]]+$ && ! "$winusername" =~ [òàùè] ]]; then
+            break
+        else
+        echo "Invalid username. Please enter only letters, do not use accents."
+        fi
+    done
+    
+    sed -i "s/admin/$winusername/g" '/mnt/WIN/sources/$OEM$/$$/Panther/unattend.xml' 
+    echo ""
+}
+
+win_10_unattend() {
+    echo ""    
+    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$10.zip'
+    7z x '/tmp/$OEM$10.zip' -o"$MOUNT_DIR/WIN/sources"
           
     while true; do
     read -p "Enter the Windows username, (letters only) do not use accents: " winusername
@@ -29,14 +50,13 @@ show_help() {
     echo ""
     echo "Intel rst driver are needed for Intel 11th up to 13th Gen Platforms, they will be copied inside the root of the usb drive"
     echo ""
-    echo "Usage for win10 or 11 without bypass: $0 <disk_name> <iso_file>"
+    echo "Usage $0 <disk_name> <iso_file>"
     echo ""
-    echo "Usage for win11 with requirements bypass: $0 <disk_name> <iso_file> <win11_bypass>"
+    echo "Additional parameters <win11_bypass> or <win10_bypass> and <rst>"
     echo ""
-    echo "Usage for win10 or 11 without bypass with rst drivers: $0 <disk_name> <iso_file> <rst>"
+    echo "Win_11_bypass allows you to skip the hardware requirements checks and the online account"
     echo ""
-    echo "Usage for win11 with requirements bypass and rst drivers: $0 <disk_name> <iso_file> <win11_bypass> <rst>"
-    echo ""
+    echo "Win_10_bypass allows you to skip the online account."
 }
 
 # Parse command-line arguments
@@ -66,15 +86,15 @@ fi
 
 DEVICE="$1"
 ISO_FILE="$2"
-WIN11_OPTION="$3"
+WIN_OPTION="$3"
 RST="$4"
 
 clear
 echo ""
 echo "Disk: $DEVICE"
 echo "ISO File: $ISO_FILE"
-if [[ -n "$WIN11_OPTION" ]]; then
-    echo "Win 11 bypass: yes"
+if [[ -n "$WIN_OPTION" ]]; then
+    echo "Win bypass: yes"
 fi
 if [[ -n "$RST" ]]; then
     echo "$RST yes"
@@ -110,7 +130,7 @@ if [ ! -f "$ISO_FILE" ]; then
 fi
 
 # Validate the third parameter (if provided)
-if [ -n "$WIN11_OPTION" ] && [ "$WIN11_OPTION" != "win11_bypass" ] && [ "$WIN11_OPTION" != "rst" ]; then
+if [ -n "$WIN_OPTION" ] && [ "$WIN_OPTION" != "win11_bypass" ] && [ "$WIN_OPTION" != "rst" ] && [ "$WIN_OPTION" != "win10_bypass" ]; then
     echo ""
     echo "Invalid third parameter. Please use 'win11_bypass' or 'rst' for the third parameter, or omit it."
     echo ""
@@ -118,15 +138,19 @@ if [ -n "$WIN11_OPTION" ] && [ "$WIN11_OPTION" != "win11_bypass" ] && [ "$WIN11_
 fi
 
 # Validate the fourth parameter (if provided)
-if [ -n "$RST" ] && [ "$RST" != "win11_bypass" ] && [ "$RST" != "rst" ]; then
+if [ -n "$RST" ] && [ "$RST" != "rst" ]; then
     echo ""
     echo "Invalid fourth parameter. Please use 'win11_bypass' or 'rst' for the fourth parameter, or omit it."
     echo ""
     exit 1
 fi
 
-# Check for sudo privileges
-[ "$UID" -eq 0 ] || exec sudo "$0" "$@"
+# Check usb size
+disk_size=$(lsblk -b "$DEVICE" | grep "disk" | awk '{print $4/1024/1024/1024}')
+if (( $(echo "$disk_size < 8" | bc -l) )); then
+    echo "Disk size is less than 8 GB."
+    exit 1
+fi
 
 clear
 echo ""
@@ -135,7 +159,7 @@ echo ""
 sleep 4
 
 # Check if some programs are installed
-programs=("wget" "sgdisk" "gdisk" "partprobe" "parted" "mkfs.ntfs" "blkid")
+programs=("wget" "sgdisk" "gdisk" "partprobe" "parted" "mkfs.ntfs" "blkid" "lsblk")
 
 for i in "${programs[@]}"; do
     if command -v sudo "$i" >/dev/null 2>&1; then
@@ -359,8 +383,12 @@ else
 fi
 
 # win_11_unattend function 
-if [ "$WIN11_OPTION" = "win11_bypass" ]; then
+if [ "$WIN_OPTION" = "win11_bypass" ]; then
     win_11_unattend
+fi
+
+if [ "$WIN_OPTION" = "win10_bypass" ]; then
+    win_10_unattend
 fi
 
 # win_rst function 
@@ -398,8 +426,21 @@ sleep 4
 # Clean
 sudo rm -rf "$MOUNT_DIR/WIN"
 sudo rm /tmp/uefi-ntfs.img
-sudo rm '/tmp/$OEM$.zip'
-sudo rm /tmp/Drivers.zip
+
+if [ -f '/tmp/$OEM$10.zip' ]  
+then
+    sudo rm '/tmp/$OEM$10.zip'
+fi
+
+if [ -f '/tmp/$OEM$11.zip' ]  
+then
+    sudo rm '/tmp/$OEM$11.zip'
+fi
+
+if [ -f '/tmp/Drivers.zip' ]  
+then
+    sudo rm /tmp/Drivers.zip
+fi
 
 # Done
 echo "COMPLETED! BYE"

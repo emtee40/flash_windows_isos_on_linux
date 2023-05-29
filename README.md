@@ -7,14 +7,22 @@ D3ENNY, who can be found at https://github.com/D3ENNY, is working on a good solu
 
 # How to use ?
 
-| Usage                                                       | Description                                                                         |
-|-------------------------------------------------------------|-------------------------------------------------------------------------------------|
-| `./win.sh <disk_name> <iso_file>`                            | For installing Windows 10 or 11 without bypassing any requirements.            |
-| `./win.sh <disk_name> <iso_file> <win11_bypass>`                    | For installing Windows 11 with requirements bypassed.                           |
-| `./win.sh <disk_name> <iso_file> <rst>`                      | For installing Windows 10 or 11 without bypassing requirements with RST drivers.|
-| `./win.sh <disk_name> <iso_file> <win11_bypass> <rst>`              | For installing Windows 11 with requirements bypassed and RST drivers.           |
-
-Please note that <disk_name> refers to the name of the disk where you want to install Windows, and <iso_file> refers to the path or name of the Windows ISO file you want to use for installation.
+| Usage                                | Description                                                |
+|--------------------------------------|------------------------------------------------------------|
+| `./script.sh <disk_name> <iso_file>` | Runs the script with the specified disk name and ISO file. |
+|                                      |                                                            |
+| Additional parameters:               |                                                            |
+| `<win11_bypass>`                     | (Optional) Skips the hardware requirements checks and the  |
+|                                      | online account for Windows 11 installation.                |
+|                                      | Must be provided as the third parameter.                    |
+|                                      |                                                            |
+| `<win10_bypass>`                     | (Optional) Skips the online account for Windows 10         |
+|                                      | installation.                                              |
+|                                      | Must be provided as the third parameter.                    |
+|                                      |                                                            |
+| `<rst>`                              | (Optional) [Description of `<rst>` parameter, if           |
+|                                      | applicable]                                                 |
+|                                      | Must be provided as the fourth parameter.                   |
 
 # Video
 
