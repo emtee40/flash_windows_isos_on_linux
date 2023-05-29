@@ -57,21 +57,10 @@ show_help() {
 }
 
 # Parse command-line arguments
-while [[ $# -gt 0 ]]; do
-    key="$1"
-
-    case $key in
-        -help)
-            show_help
-            exit 0
-            ;;
-        *)
-            break
-            ;;
-    esac
-
-    shift
-done
+if [[ $1 == "-help" ]]; then
+    show_help
+    exit 0
+fi
 
 # Validate the number of command-line arguments
 if [ "$#" -lt 2 ]; then
