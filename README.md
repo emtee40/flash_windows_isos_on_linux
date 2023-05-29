@@ -10,7 +10,6 @@ D3ENNY, who can be found at https://github.com/D3ENNY, is working on a better so
 | Usage                                | Description                                                |
 |--------------------------------------|------------------------------------------------------------|
 | `./script.sh <disk_name> <iso_file>` | Runs the script with the specified disk name and ISO file. |
-|                
 |                                      |                                                            |
 | Additional parameters:               |                                                            |
 | `<win11_bypass>`                     | (Optional) Skips the hardware requirements checks and the  |
