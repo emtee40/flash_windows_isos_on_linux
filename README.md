@@ -20,8 +20,7 @@ D3ENNY, who can be found at https://github.com/D3ENNY, is working on a good solu
 |                                      | installation.                                              |
 |                                      | Must be provided as the third parameter.                    |
 |                                      |                                                            |
-| `<rst>`                              | (Optional) [Description of `<rst>` parameter, if           |
-|                                      | applicable]                                                 |
+| `<rst>`                              | (Optional) Intel rst driver are needed for Intel 11th up to 13th Gen Platforms, they will be copied inside the root of the usb drive                                                |
 |                                      | Must be provided as the fourth parameter.                   |
 
 # Video
