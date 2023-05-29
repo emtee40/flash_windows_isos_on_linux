@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Check for sudo privileges
-[ "$UID" -eq 0 ] || exec sudo "$0" "$@"
-
 win_11_unattend() {
     echo ""    
     wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$11.zip'
@@ -144,6 +141,9 @@ if [ -n "$RST" ] && [ "$RST" != "rst" ]; then
     echo ""
     exit 1
 fi
+
+# Check for sudo privileges
+[ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
 # Check usb size
 disk_size=$(lsblk -b "$DEVICE" | grep "disk" | awk '{print $4/1024/1024/1024}')
