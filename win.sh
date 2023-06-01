@@ -177,7 +177,7 @@ install_debian_dependencies() {
 
 install_fedora_dependencies() {
     printf "\n\n============\nInstalling Fedora-based dependencies...\n\n"
-    sudo dnf install -y git p7zip p7zip-plugins 
+    sudo dnf install -y p7zip p7zip-plugins 
     check_installation_status 
 }
 
