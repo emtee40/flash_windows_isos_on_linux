@@ -44,18 +44,31 @@ win_rst() {
 }
 
 show_help() {
+    echo ""
     echo "Usage: ./win.sh <disk_name> <iso_file>"
     echo ""
     echo "Additional parameters:"
     echo "- <win11_bypass> (Must be provided as the third parameter)"
     echo "- <win10_bypass> (Must be provided as the third parameter)"
-    echo "- <rst>"
+    echo "- <rst> (Must be provided as the third or fourth parameter)"
     echo ""
     echo "Win_11_bypass allows you to skip the hardware requirements checks and the online account."
     echo ""
     echo "Win_10_bypass allows you to skip the online account."
     echo ""
     echo "Intel RST drivers are needed for Intel 11th up to 13th Gen Platforms. They will be copied inside the root of the USB drive."
+    echo ""
+    echo "The allowed combinations are:"
+    echo ""
+    echo "./win.sh <disk_name> <iso_file>"
+    echo "./win.sh <disk_name> <iso_file> <rst>"
+    echo "./win.sh <disk_name> <iso_file> <win11_bypass>"
+    echo "./win.sh <disk_name> <iso_file> <win11_bypass> <rst>"
+    echo "./win.sh <disk_name> <iso_file> <win10_bypass>"
+    echo "./win.sh <disk_name> <iso_file> <win10_bypass> <rst>"
+    echo ""
+    echo "The available disks are:"
+    lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
     echo ""
 }
 
