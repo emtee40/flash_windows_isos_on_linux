@@ -1,162 +1,9 @@
 #!/bin/bash
 
-win_11_unattend() {
-    echo ""    
-    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$11.zip'
-    7z x '/tmp/$OEM$11.zip' -o"$MOUNT_DIR/WIN/sources"
-          
-    while true; do
-    read -p "Enter the Windows username, (letters only) do not use accents: " winusername
-        if [[ "$winusername" =~ ^[a-zA-Z[:space:]]+$ && ! "$winusername" =~ [òàùè] ]]; then
-            break
-        else
-        echo "Invalid username. Please enter only letters, do not use accents."
-        fi
-    done
-    
-    sed -i "s/admin/$winusername/g" '/mnt/WIN/sources/$OEM$/$$/Panther/unattend.xml' 
-    echo ""
-}
-
-win_10_unattend() {
-    echo ""    
-    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$10.zip'
-    7z x '/tmp/$OEM$10.zip' -o"$MOUNT_DIR/WIN/sources"
-          
-    while true; do
-    read -p "Enter the Windows username, (letters only) do not use accents: " winusername
-        if [[ "$winusername" =~ ^[a-zA-Z[:space:]]+$ && ! "$winusername" =~ [òàùè] ]]; then
-            break
-        else
-        echo "Invalid username. Please enter only letters, do not use accents."
-        fi
-    done
-    
-    sed -i "s/admin/$winusername/g" '/mnt/WIN/sources/$OEM$/$$/Panther/unattend.xml' 
-    echo ""
-}
-
-win_rst() {
-    echo ""
-    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/Drivers.zip'
-    7z x /tmp/Drivers.zip -o"$MOUNT_DIR/WIN"
-    echo ""    
-}
-
-show_help() {
-    echo ""
-    echo "Usage: ./win.sh <disk_name> <iso_file>"
-    echo ""
-    echo "Additional parameters:"
-    echo "- <win11_bypass> (Must be provided as the third parameter)"
-    echo "- <win10_bypass> (Must be provided as the third parameter)"
-    echo "- <rst> (Must be provided as the third or fourth parameter)"
-    echo ""
-    echo "Win_11_bypass allows you to skip the hardware requirements checks and the online account."
-    echo ""
-    echo "Win_10_bypass allows you to skip the online account."
-    echo ""
-    echo "Intel RST drivers are needed for Intel 11th up to 13th Gen Platforms. They will be copied inside the root of the USB drive."
-    echo ""
-    echo "The allowed combinations are:"
-    echo ""
-    echo "./win.sh <disk_name> <iso_file>"
-    echo "./win.sh <disk_name> <iso_file> <rst>"
-    echo "./win.sh <disk_name> <iso_file> <win11_bypass>"
-    echo "./win.sh <disk_name> <iso_file> <win11_bypass> <rst>"
-    echo "./win.sh <disk_name> <iso_file> <win10_bypass>"
-    echo "./win.sh <disk_name> <iso_file> <win10_bypass> <rst>"
-    echo ""
-    echo "The available disks are:"
-    lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
-    echo ""
-}
-
-# Parse command-line arguments
-if [[ $1 == "-help" ]]; then
-    show_help
-    exit 0
-fi
-
-# Validate the number of command-line arguments
-if [ "$#" -lt 2 ]; then
-    echo ""
-    echo "Type -help for the help"
-    echo ""
-    exit 1
-fi
-
-DEVICE="$1"
-ISO_FILE="$2"
-WIN_OPTION="$3"
-RST="$4"
-
-clear
-echo ""
-echo "Disk: $DEVICE"
-echo "ISO File: $ISO_FILE"
-if [[ -n "$WIN_OPTION" ]]; then
-    echo "Win bypass: yes"
-fi
-if [[ -n "$RST" ]]; then
-    echo "$RST yes"
-fi
-echo ""
-
-# Validate the DEVICE parameter
-if [[ ! "$DEVICE" =~ ^/dev/sd[a-z]$ ]]; then
-    echo ""
-    echo "Invalid DEVICE parameter. Please use a valid device name in the format '/dev/sdx', where 'x' can be any letter."
-    echo ""
-    exit 1
-fi
-
-# Check if the device exists
-if [ ! -e "$DEVICE" ]; then
-    echo "Device $DEVICE does not exist."
-    exit 1
-fi
-
-# Validate the ISO_FILE parameter
-if [[ ! "$ISO_FILE" =~ \.iso$ ]]; then
-    echo ""
-    echo "Invalid ISO_FILE parameter. Please provide a valid file path with '.iso' extension."
-    echo ""
-    exit 1
-fi
-
-# Check if the ISO file exists
-if [ ! -f "$ISO_FILE" ]; then
-    echo "ISO file $ISO_FILE does not exist."
-    exit 1
-fi
-
-# Validate the third parameter (if provided)
-if [ -n "$WIN_OPTION" ] && [ "$WIN_OPTION" != "win11_bypass" ] && [ "$WIN_OPTION" != "rst" ] && [ "$WIN_OPTION" != "win10_bypass" ]; then
-    echo ""
-    echo "Invalid third parameter. Please use 'win11_bypass' or 'rst' for the third parameter, or omit it."
-    echo ""
-    exit 1
-fi
-
-# Validate the fourth parameter (if provided)
-if [ -n "$RST" ] && [ "$RST" != "rst" ]; then
-    echo ""
-    echo "Invalid fourth parameter. Please use 'win11_bypass' or 'rst' for the fourth parameter, or omit it."
-    echo ""
-    exit 1
-fi
-
 # Check for sudo privileges
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
-# Check usb size
-disk_size=$(lsblk -b "$DEVICE" | grep "disk" | awk '{print $4/1024/1024/1024}')
-if (( $(echo "$disk_size < 8" | bc -l) )); then
-    echo "Disk size is less than 8 GB."
-    exit 1
-fi
-
+########################## Dependencies check ##########################
 clear
 echo ""
 echo "Checking dependencies"
@@ -166,11 +13,12 @@ sleep 4
 # Check if some programs are installed
 programs=("wget" "sgdisk" "gdisk" "partprobe" "parted" "mkfs.ntfs" "blkid" "lsblk")
 
-for i in "${programs[@]}"; do
-    if command -v sudo "$i" >/dev/null 2>&1; then
-        echo "$i is installed"
+for program in "${programs[@]}"; do
+    if sudo which "$program" >/dev/null 2>&1; then
+        echo "$program is installed"
     else
-        echo "$i is not installed"
+        echo "$program is not installed"
+        sleep 10
         exit 1
     fi
 done
@@ -206,16 +54,51 @@ check_installation_status() {
 
 # Check which distro are you using
 if command -v pacman &>/dev/null; then
-    echo "Arch Linux"
     install_arch_linux_dependencies
 elif command -v apt-get &>/dev/null; then
-    echo "Debian-based"
     install_debian_dependencies
 elif command -v dnf &>/dev/null; then
-    echo "Fedora-based"
     install_fedora_dependencies
 else
     echo "Unknown distro"
+    exit 1
+fi
+
+clear
+
+########################## End of dependencies check ##########################
+
+########################## Usb partitioning ##########################
+
+# Function to list USB devices
+list_usb_devices() {
+  lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
+}
+
+# Get USB device list with numbers using awk
+usb_devices_list=$(list_usb_devices | awk '{print NR, $0}')
+
+# Print the numbered list
+echo "List of connected USB devices:"
+echo "$usb_devices_list"
+
+# Ask the user to choose a device by number
+read -p "Enter the number of the USB device you want to select: " chosen_number
+
+# Extract the selected USB device name using awk
+DEVICE=$(echo "$usb_devices_list" | awk -v chosen="$chosen_number" '$1 == chosen {print $2}')
+
+# Check if the user input is valid
+if [ -z "$DEVICE" ]; then
+  echo "Invalid choice. Please enter a valid number from the list."
+else
+  echo "You have chosen: $DEVICE"
+fi
+
+# Check usb size
+disk_size=$(lsblk -b "$DEVICE" | grep "disk" | awk '{print $4/1024/1024/1024}')
+if (( $(echo "$disk_size < 8" | bc -l) )); then
+    echo "Disk size is less than 8 GB."
     exit 1
 fi
 
@@ -342,8 +225,28 @@ else
     exit 1
 fi
 
+########################## End of usb partitioning ##########################
+
+########################## Iso extraction ##########################
+
 # Mount the win partition
 sudo mount "${DEVICE}1" "$MOUNT_DIR/WIN"
+
+# Select iso file
+clear
+echo ""
+while true; do
+  echo ""
+  read -e -p "Drag & drop your Windows ISO file: " ISO_FILE
+  eval ISO_FILE="$ISO_FILE"
+
+  if [[ -f "$ISO_FILE" && "$ISO_FILE" == *.iso ]]; then
+    echo "You have selected a valid ISO file: $ISO_FILE"
+    break
+  else
+    echo "Invalid selection. Please make sure to choose a valid Windows ISO file."
+  fi
+done
 
 clear
 echo ""
@@ -366,13 +269,10 @@ extract_on_fedora() {
 
 # Check which distro are you using
 if command -v pacman &>/dev/null; then
-    echo "Arch Linux"
     extract_on_arch
 elif command -v apt-get &>/dev/null; then
-    echo "Debian-based"
     extract_on_debian
 elif command -v dnf &>/dev/null; then
-    echo "Fedora-based"
     extract_on_fedora
 else
     echo "Unknown distro"
@@ -387,19 +287,106 @@ else
     exit 1
 fi
 
-# win_11_unattend function 
-if [ "$WIN_OPTION" = "win11_bypass" ]; then
-    win_11_unattend
-fi
+clear
 
-if [ "$WIN_OPTION" = "win10_bypass" ]; then
-    win_10_unattend
-fi
+########################## End of iso extraction ##########################
 
-# win_rst function 
-if [ "$RST" = "rst" ]; then
-    win_rst
-fi
+########################## Iso image options ##########################
+
+# Function to handle win 11 unattend.xml
+win_11_unattend() {
+    echo ""    
+    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$11.zip'
+    7z x '/tmp/$OEM$11.zip' -o"$MOUNT_DIR/WIN/sources"
+          
+    while true; do
+    read -p "Enter the Windows username, (letters only) do not use accents: " winusername
+        if [[ "$winusername" =~ ^[a-zA-Z[:space:]]+$ && ! "$winusername" =~ [òàùè] ]]; then
+            break
+        else
+        echo "Invalid username. Please enter only letters, do not use accents."
+        fi
+    done
+    
+    sed -i "s/admin/$winusername/g" '/mnt/WIN/sources/$OEM$/$$/Panther/unattend.xml' 
+    echo ""
+}
+
+# Function to handle win10 unattend.xml
+win_10_unattend() {
+    echo ""    
+    wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/$OEM$10.zip'
+    7z x '/tmp/$OEM$10.zip' -o"$MOUNT_DIR/WIN/sources"
+          
+    while true; do
+    read -p "Enter the Windows username, (letters only) do not use accents: " winusername
+        if [[ "$winusername" =~ ^[a-zA-Z[:space:]]+$ && ! "$winusername" =~ [òàùè] ]]; then
+            break
+        else
+        echo "Invalid username. Please enter only letters, do not use accents."
+        fi
+    done
+    
+    sed -i "s/admin/$winusername/g" '/mnt/WIN/sources/$OEM$/$$/Panther/unattend.xml' 
+    echo ""
+}
+
+# Function that asks if the user wants the unattend.xml
+select_unattend_option() {
+  read -p "Do you want to bypass requisites? (For Windows 10: online account; For Windows 11: hardware requirements and online account) (yes/no): " UNATTEND_OPTION
+
+  case "$UNATTEND_OPTION" in
+    [Yy]|[Yy][Ee][Ss])
+      echo "You chose to use unattend."
+      select_windows_version
+      ;;
+    [Nn]|[Nn][Oo])
+      echo "You chose not to use unattend."
+      ;;
+    *)
+      echo "Invalid choice. Please enter either 'yes' or 'no'."
+      select_unattend_option
+      ;;
+  esac
+}
+
+# Function to select Windows version 
+select_windows_version() {
+  read -p "Is this Windows 10 or 11? (10/11): " WINDOWS_VERSION
+
+  case "$WINDOWS_VERSION" in
+    10)
+      win_10_unattend
+      ;;
+    11)
+      win_11_unattend
+      ;;
+    *)
+      echo "Invalid choice. Please enter either '10' or '11'."
+      select_windows_version
+      ;;
+  esac
+}
+
+# Bypass
+select_unattend_option
+
+echo ""
+echo "Downloading rst drivers"
+echo ""
+wget -P /tmp 'https://github.com/daboynb/flash_windows_isos_on_linux/raw/main/files/Drivers.zip'
+echo ""
+echo "Copying rst drivers"
+echo ""
+7z x /tmp/Drivers.zip -o"$MOUNT_DIR/WIN"
+echo ""   
+echo "Done"
+echo ""
+clear 
+
+########################## End of iso image options ##########################
+
+########################## Sync and clean ##########################
 
 sleep 4
 clear
@@ -447,5 +434,9 @@ then
     sudo rm /tmp/Drivers.zip
 fi
 
+clear
+
 # Done
 echo "COMPLETED! BYE"
+
+########################## End of sync and clean ##########################
