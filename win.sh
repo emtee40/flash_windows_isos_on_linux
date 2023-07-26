@@ -377,6 +377,7 @@ select_windows_version() {
 # Bypass
 select_unattend_option
 
+# Rst drivers
 echo ""
 echo "Downloading rst drivers"
 echo ""
