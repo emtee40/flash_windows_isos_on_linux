@@ -75,6 +75,7 @@ list_usb_devices() {
   lsblk -d -n -p -o NAME,MODEL | grep "/dev/sd"
 }
 
+while true; do
 # Get USB device list with numbers using awk
 usb_devices_list=$(list_usb_devices | awk '{print NR, $0}')
 
@@ -83,17 +84,22 @@ echo "List of connected USB devices:"
 echo "$usb_devices_list"
 
 # Ask the user to choose a device by number
-read -p "Enter the number of the USB device you want to select: " chosen_number
+  read -p "Enter the number of the USB device you want to select: " chosen_number
 
-# Extract the selected USB device name using awk
-DEVICE=$(echo "$usb_devices_list" | awk -v chosen="$chosen_number" '$1 == chosen {print $2}')
+  # Extract the selected USB device name using awk
+  DEVICE=$(echo "$usb_devices_list" | awk -v chosen="$chosen_number" '$1 == chosen {print $2}')
 
-# Check if the user input is valid
-if [ -z "$DEVICE" ]; then
-  echo "Invalid choice. Please enter a valid number from the list."
-else
-  echo "You have chosen: $DEVICE"
-fi
+  # Check if the user input is valid
+  if [ -z "$DEVICE" ]; then
+    echo "Invalid choice. Please enter a valid number from the list."
+    sleep 4
+    clear
+  else
+    break
+  fi
+done
+
+echo "You have chosen: $DEVICE"
 
 # Check usb size
 disk_size=$(lsblk -b "$DEVICE" | grep "disk" | awk '{print $4/1024/1024/1024}')
